@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Watch</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <style>
+  .onair {
+    color: blue;
+  }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <p>{{ message }}</p>
+    <template v-if="state == 'ready'">
+      <button v-on:click="listRooms">List</button>
+    </template>
+    <template v-else-if="state == 'listed'">
+      <button v-on:click="listRooms">Reload</button>
+      <ol>
+        <room-item v-for="item in rooms" :key="item.id" v-bind:room="item" v-on:del="remove(item.id)" v-on:con="watch(item.id)"></room-item>
+      </ol>
+    </template>
+    <template v-else>
+      <button v-on:click="disconnect">disconnect</button>
+      <template v-if="thetamode">
+        <button v-on:click="thetaoff">ThetaMode Off</button>
+      </template>
+      <template v-else>
+        <button v-on:click="thetaon">ThetaMode On</button>
+      </template>
+    </template>
+  </div>
+  <!-- out of vue -->
+  <div id="wrapper">
+    <video id="remoteVideo" width="100%" height="100%" autoplay="autoplay"></video>
+  </div>
+  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/three/build/three.min.js"></script>
+  <script src="./thetaview.js"></script>
+  <script src="./sfusdk.js"></script>
+  <script src="./watch.js"></script>
+</body>
+
+</html>
