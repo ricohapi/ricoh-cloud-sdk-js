@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Broadcast</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+</head>
+
+<body>
+  <div id="app">
+    <p>{{ message }}</p>
+    <template v-if="state == 'ready'">
+      <button id="broadcast" v-on:click="broadcast">Start Broadcast</button>
+    </template>
+    <template v-else-if="state == 'connected'">
+      <button v-on:click="disconnect">Disconnect</button>
+    </template>
+  </div>
+  <!-- out of vue -->
+  <div id="wrapper">
+    <video id="localVideo" autoplay="autoplay"></video>
+  </div>
+  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="./sfucssdk.js"></script>
+  <script src="./broadcast.js"></script>
+</body>
+
+</html>
