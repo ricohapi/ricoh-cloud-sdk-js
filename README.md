@@ -60,6 +60,10 @@ sfu.connect(<URL>, <Access Token>);
 sfu.disconnect();
 ```
 
+## Sample Codes
+
+- [SFU Sample Code](./samples/sfu-server/)
+
 ## See Also
 
 * [RICOH Cloud API Developer Guide](https://api.ricoh/docs/ricoh-cloud-api/)
