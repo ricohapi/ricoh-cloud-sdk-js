@@ -1,49 +1,50 @@
 # SFU Sample Code
 
-A sample code to show how to use WebRTC SFU API.
+Study sample code to learn how to use WebRTC SFU API via RICOH Cloud SDK for JavaScript.
 
-This sample code is for backend and frontend written with express.
+This code sample offers a back-end function and a front-end function. The sample uses Express.
 
-## Backend
+## Back-End
 
-Application developers need to wrap SFU service APIs to hide client credentials from users by building a Web API server.
+A back-end Web API server implementation which hides Client Credentials from front-end service users. The source code is located in `app.js`.
 
-The example is written in app.js.
-You need to implement additional user limitation for real world use case.
+Note that this code sample aims to show the basic usage of the API and the SDK. If you want to publish this sample to offer your service, you should consider adding more user limitation to this implementation.
 
-## Frontend
+## Front-End
 
-Application developers need to write frontend codes.
+A front-end application for WebRTC. The source code is located in `public` directory.
 
-The example is located in public directory.
+## Requirements
+
+* npm
 
 ## How to Use
 
-In this section, the example for local server is described.
-Actually it may be necessary to build a server on the Internet.
+Download this code sample using `git clone`.
 
-### Preparation
+```sh
+$ git clone https://github.com/ricohapi/ricoh-cloud-sdk-js.git
+$ cd ricoh-cloud-sdk-js/sfu-server
+```
 
-Set your client credentials in app.js.
+Set your Client Credentials in `app.js`.
 
 ```javascript
 L11: const CLIENT_ID = ""
 L12: const CLIENT_SECRET = ""
 ```
 
-You need to install npm in advance.
-
-After run commands bellow, a web server start with port:3000.
+Run the following commands to start a web server on port 3000.
 
 ```sh
 $ nmp install
 $ npm start
 ```
 
-You can access to broadcasting page sample by `http://localhost:3000/broadcast.html`
+Open `http://localhost:3000/broadcast.html` in your browser.
 
-Push the broadcast button, you can start stream.
+Push the "broadcast" button to start broadcasting.
 
-You can access to watching page sample by `http://localhost:3000/watch.html`
+Open `http://localhost:3000/watch.html` in another window.
 
-Push the list button, you can start listing rooms.
+Push the "list" button to see currently available rooms and select a room to start watching the broadcast.
