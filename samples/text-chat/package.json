@@ -1,0 +1,25 @@
+{
+  "name": "tchat",
+  "version": "0.1.0",
+  "description": "text chat sample app",
+  "main": "server.js",
+  "author": "RICOH",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">= 7.6.0"
+  },
+  "dependencies": {
+    "koa": "2.5.0",
+    "koa-router": "7.4.0",
+    "koa-better-serve": "2.0.7",
+    "kcors": "2.2.1",
+    "koa-convert": "1.2.0",
+    "jsonwebtoken": "8.1.1",
+    "axios": "0.18.0",
+    "query-string": "5.0.1"
+  }
+}

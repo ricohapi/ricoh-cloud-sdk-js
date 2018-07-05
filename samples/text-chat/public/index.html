@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Text Chat Sample App</title>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+  <link href="https://unpkg.com/vuetify@1.0.0/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+
+<body>
+  <div id="app" style="max-width: 640px; margin: auto;">
+    <v-app>
+      <v-card>
+        <v-container fluid grid-list-sm style="min-height: 0;">
+          <v-layout flex align-center justify-center>
+            <v-flex xs12>
+              <v-toolbar color="indigo">
+                <v-toolbar-title class="white--text">User</v-toolbar-title>
+              </v-toolbar>
+              <v-card>
+                <v-card-text>
+                  <div>
+                    <v-form>
+                      <v-layout row>
+                        <v-flex xs6>
+                          <v-text-field label="user" v-model="user" disabled></v-text-field>
+                        </v-flex>
+                        <v-flex xs6>
+                          <v-text-field label="pass" v-model="token" disabled></v-text-field>
+                        </v-flex>
+                      </v-layout>
+                      <template v-if="state == 'ready'">
+                        <v-btn block @click="connect">Connect</v-btn>
+                      </template>
+                      <template v-else-if="state == 'connected' || state == 'opened'">
+                        <v-btn color="error" block @click="disconnect">Disconnect</v-btn>
+                      </template>
+                      <template v-else-if="state == 'error'">
+                        <v-text-field v-model="errmsg" disabled></v-text-field>
+                      </template>
+                    </v-form>
+                    <template v-if="state == 'connected' || state == 'opened'">
+                      set presence
+                      <v-btn flat @click="away" color="primary"> away</v-btn> or
+                      <v-btn flat @click="onChat" color="primary">chat</v-btn>
+                    </template>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card>
+      <template v-if="state == 'opened'">
+        <v-card color="grey lighten-3">
+          <v-card-text>
+            <v-container fluid>
+              <v-flex xs12>
+                <v-text-field textarea v-model="chat" label="Chat"></v-text-field>
+              </v-flex>
+              <v-layout>
+                <v-flex xs9>
+                  <v-text-field v-model="sndmsg"></v-text-field>
+                </v-flex>
+                <v-flex xs3>
+                  <v-btn @click="send">Send</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </template>
+      <template v-if="state == 'connected' || state=='opened'">
+        <v-toolbar color="indigo" dark>
+          <v-toolbar-title class="white--text">Contacts</v-toolbar-title>
+        </v-toolbar>
+        <v-card color="indigo lighten-5">
+          <v-card-text>
+            <v-form ref="form">
+              <v-layout row>
+                <v-flex xs9>
+                  <v-text-field label="user" v-model="newpeer"></v-text-field>
+                </v-flex>
+                <v-flex xs3>
+                  <v-btn block @click="subscribe">Subscribe</v-btn>
+                </v-flex>
+              </v-layout>
+            </v-form>
+          </v-card-text>
+        </v-card>
+        <v-card>
+          <v-container fluid grid-list-sm style="min-height: 0;">
+            <v-layout row wrap>
+              <v-flex xs12 v-for="peer in peers" :key="peer.id">
+                <v-card>
+                  <v-card-title primary-title>
+                    <div>
+                      <h3>{{peer.name}}</h4>
+                      <span class="grey--text">{{peer.id}}</span>(<span class="grey--text">{{peer.state}}</span>)
+                    </div>
+                  </v-card-title>
+                  <v-card-actions>
+                    <v-btn flat color="blue" v-bind:peer="peer" @click="open(peer.id)">Chat</v-btn>
+                    <v-spacer></v-spacer>
+                    <v-btn icon flat color="blue" v-bind:peer="peer" @click="rename(peer.id, 'abc')">
+                      <v-icon>edit</v-icon>
+                    </v-btn>
+                    <v-btn icon flat color="red" v-bind:peer="peer" @click="unsubscribe(peer.id)">
+                      <v-icon>delete</v-icon>
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </template>
+    </v-app>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@1.0.4/dist/vuetify.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/strophe.js/1.2.14/strophe.min.js "></script>
+  <script src="./boshsdk.js "></script>
+  <script src="./app.js "></script>
+</body>
+
+</html>
