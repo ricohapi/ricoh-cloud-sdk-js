@@ -1,21 +1,17 @@
 {
-  "name": "sfuserver",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
+  "name": "sfusample",
+  "version": "1.0.0",
+  "description": "livestreaming sample",
+  "main": "index.js",
+  "author": "",
+  "license": "MIT",
   "dependencies": {
-    "body-parser": "1.17.2",
-    "express": "4.15.3",
-    "axios": "0.16.2"
-  },
-  "devDependencies": {
-    "eslint": "^4.2.0",
-    "eslint-config-airbnb": "^15.0.2",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.1.0"
-  },
-  "lisence": "MIT"
+    "koa-bodyparser":"4.2.1",
+    "axios":"0.18.0",
+    "koa": "2.5.2",
+    "koa-router": "7.4.0",
+    "koa-better-serve": "2.0.7",
+    "kcors": "2.2.2",
+    "koa-convert": "1.2.0"
+  }
 }

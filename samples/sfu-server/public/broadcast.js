@@ -5,9 +5,23 @@
  */
 
 const elmVideo = document.getElementById('localVideo');
-const http = axios.create({ baseURL: 'http://localhost:3000' });
+const pos = location.href.lastIndexOf('/');
+const http = axios.create({ baseURL: location.href.substr(0, pos) });
+
 let localStream = null;
 let sfu = null;
+
+function debounce (fn, delay) {
+  let tid = null;
+  return function () {
+    clearTimeout(tid);
+    const args = arguments;
+    const self = this;
+    tid = setTimeout(() => {
+      fn.apply(self, args);
+    }, delay);
+  }
+}
 
 const app = new Vue({
   el: '#app',
@@ -21,15 +35,15 @@ const app = new Vue({
       if (sfu) sfu.disconnect();
       this.message = 'disconnected.';
     },
-    broadcast: function () {
+    broadcast: debounce(function () {
       const vm = this;
       console.log('#### start broadcast()');
-      const constraints = { video: { width: 1280, height: 720 }, audio: true };
+      const constraints = { video: { width: 1280, height: 720 }, audio: false };
       navigator.mediaDevices.getUserMedia(constraints)
         .then((stream) => {
           console.log('#### getUserMedia() loaded');
           localStream = stream;
-          elmVideo.src = window.URL.createObjectURL(stream);
+          elmVideo.srcObject =stream;
           return http.request({ method: 'post', url: '/ticket', data: { direction: 'up' } });
         })
         .then((ret) => {
@@ -42,13 +56,12 @@ const app = new Vue({
               localStream = null;
             }
             if (elmVideo.src) {
-              window.URL.revokeObjectURL(elmVideo.src);
-              elmVideo.src = null;
+              elmVideo.srcObject = null;
             }
             vm.state = 'ready';
             console.log('#### closed');
           };
-          sfu.setMedia({ codec_type: 'VP9', bit_rate: 1000 }, { codec_type: 'OPUS' }, localStream);
+          sfu.setMedia({ codec_type: 'VP9', bit_rate: 2000 }, { codec_type: 'OPUS' }, localStream);
           sfu.connect(ret.data.url, ret.data.access_token);
           vm.state = 'connected';
         })
@@ -57,6 +70,6 @@ const app = new Vue({
           vm.message = JSON.stringify(e);
           vm.state = 'ready';
         });
-    },
+    }, 500), // debounce
   },
 });

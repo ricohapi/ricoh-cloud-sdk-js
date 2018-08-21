@@ -6,7 +6,7 @@ This code sample offers a back-end function and a front-end function. The sample
 
 ## Back-End
 
-A back-end Web API server implementation which hides Client Credentials from front-end service users. The source code is located in `app.js`.
+A back-end Web API server implementation which hides Client Credentials from front-end service users.
 
 Note that this code sample aims to show the basic usage of the API and the SDK. If you want to publish this sample to offer your service, you should consider adding more user limitation to this implementation.
 
@@ -16,7 +16,7 @@ A front-end application for WebRTC. The source code is located in `public` direc
 
 ## Requirements
 
-* npm
+* yarn
 
 ## How to Use
 
@@ -27,18 +27,18 @@ $ git clone https://github.com/ricohapi/ricoh-cloud-sdk-js.git
 $ cd ricoh-cloud-sdk-js/samples/sfu-server
 ```
 
-Set your Client Credentials in `app.js`.
+Set your Client Credentials as envinonment variables.
 
-```javascript
-L11: const CLIENT_ID = ""
-L12: const CLIENT_SECRET = ""
+```sh
+$ export RDC_CLIENT_ID=<your client id>
+$ export RDC_CLIENT_SECRET=<your client secret>
 ```
 
 Run the following commands to start a web server on port 3000.
 
 ```sh
-$ npm install
-$ npm start
+$ yarn
+$ yarn start
 ```
 
 Open `http://localhost:3000/broadcast.html` in your browser.

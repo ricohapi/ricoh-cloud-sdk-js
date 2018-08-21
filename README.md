@@ -48,8 +48,7 @@ Use `onaddstream` to set a remote stream object to your media and use `setMedia`
 
 ```javascript
 sfu.onaddstream = event => {
-  //Create a stream object using window.URL.createObjectURL(event.stream)
-  //Set the object to the source attribute of your media.
+  // Set event.streams[0] to the srcObject attribute of your media.
 };
 sfu.setMedia({ codec_type: 'VP9' }, { codec_type: 'OPUS' });
 sfu.onclose = () => {

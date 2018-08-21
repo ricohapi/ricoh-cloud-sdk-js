@@ -8,7 +8,20 @@ let sfu = null;
 const thetaview = new ThetaView();
 const elmWrapper = document.getElementById('wrapper');
 const elmVideo = document.getElementById('remoteVideo');
-const http = axios.create({ baseURL: 'http://localhost:3000' });
+const pos = location.href.lastIndexOf('/');
+const http = axios.create({ baseURL: location.href.substr(0, pos) });
+
+function debounce (fn, delay) {
+  let tid = null;
+  return function () {
+    clearTimeout(tid);
+    const args = arguments;
+    const self = this;
+    tid = setTimeout(() => {
+      fn.apply(self, args);
+    }, delay);
+  }
+}
 
 Vue.component('room-item', {
   props: ['room'],
@@ -17,6 +30,7 @@ Vue.component('room-item', {
     '<div v-bind:class="{onair:room.upCount > 0}">' +
     ' {{ room.id }} watch:{{ room.downCount }} </div>' +
     '</button>' +
+    '<button v-on:click="$emit(\'del\')">Del</button>' +
     '</div>',
 });
 
@@ -29,19 +43,30 @@ const app = new Vue({
     thetamode: false,
   },
   methods: {
-    thetaon: function () {
+    thetaon: function() {
       thetaview.setContainer(elmWrapper);
       thetaview.start(elmVideo);
       this.thetamode = true;
     },
-    thetaoff: function () {
+    thetaoff: function() {
       thetaview.stop(elmVideo);
       this.thetamode = false;
     },
-    disconnect: function () {
+    disconnect: function() {
       if (sfu) sfu.disconnect();
     },
-    watch: function (id) {
+    remove: debounce(function(id) {
+      const vm = this;
+      http.request({ method: 'delete', url: '/room', data: { room: id } })
+        .then((ret) => {
+          vm.listRooms();
+        })
+        .catch((e) => {
+          vm.message = JSON.stringify(e);
+          vm.state = 'ready';
+        });
+    }, 500),
+    watch: function(id) {
       const vm = this;
       console.log('#### start watch() -> ticket ', id);
 
@@ -52,14 +77,13 @@ const app = new Vue({
           sfu.onclose = () => {
             vm.state = 'listed';
             console.log('#### closed');
-            if (!elmVideo.src) return;
+            if (!elmVideo.srcObject) return;
             thetaview.stop(elmVideo);
             vm.thetamode = false;
-            window.URL.revokeObjectURL(elmVideo.src);
-            elmVideo.src = null;
+            elmVideo.srcObject = null;
           };
           sfu.onaddstream = (event) => {
-            elmVideo.src = window.URL.createObjectURL(event.stream);
+            elmVideo.srcObject = event.streams[0];
           };
           sfu.setMedia({ codec_type: 'VP9' }, { codec_type: 'OPUS' });
           sfu.connect(ret.data.url, ret.data.access_token);
@@ -70,7 +94,7 @@ const app = new Vue({
           vm.state = 'ready';
         });
     },
-    listRooms: function () {
+    listRooms: function() {
       const vm = this;
       vm.message = 'Connecting...';
       vm.rooms = [];
@@ -80,7 +104,8 @@ const app = new Vue({
           ret.data.rooms.forEach(r => vm.rooms.push({
             id: r.id,
             upCount: r.up_count,
-            downCount: r.down_count }));
+            downCount: r.down_count
+          }));
           vm.state = 'listed';
           vm.message = `Room count: ${vm.rooms.length}`;
         })

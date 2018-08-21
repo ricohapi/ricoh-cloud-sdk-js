@@ -21,7 +21,7 @@
     <template v-else-if="state == 'listed'">
       <button v-on:click="listRooms">Reload</button>
       <ol>
-        <room-item v-for="item in rooms" :key="item.id" v-bind:room="item" v-on:del="remove(item.id)" v-on:con="watch(item.id)"></room-item>
+        <room-item v-for="item in rooms" :key="item.id" v-bind:room="item" v-on:con="watch(item.id)" v-on:del="remove(item.id)"></room-item>
       </ol>
     </template>
     <template v-else>
@@ -41,6 +41,9 @@
   <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://unpkg.com/three/build/three.min.js"></script>
+
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
   <script src="./thetaview.js"></script>
   <script src="./sfusdk.js"></script>
   <script src="./watch.js"></script>

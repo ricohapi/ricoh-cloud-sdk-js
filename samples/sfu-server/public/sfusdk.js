@@ -3,9 +3,6 @@
  * See LICENSE for more information
  */
 
-const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
-const RTCSessionDescription = window.RTCSessionDescription;
-
 class SFUClient {
   constructor(dir, id) {
     this._ws = null;
@@ -69,14 +66,22 @@ class SFUClient {
     pc.onclose = console.log;
     pc.onerror = console.error;
     pc.oniceconnectionstatechange = console.log;
+    pc.onnegotiationneeded = console.log;
+    pc.onicecandidateerror = console.log;
+    pc.onsignalingstatechange = console.log;
+    pc.oniceconnectionstatechange = console.log;
+    pc.onicegatheringstatechange = console.log;
+    pc.onconnectionstatechange = console.log;
     pc.onicecandidate = (event) => {
       if (!event.candidate) return;
       const candidate = event.candidate.toJSON();
       candidate.type = 'candidate';
       this._ws.send(JSON.stringify(candidate));
     };
-    if (this.onaddstream) pc.onaddstream = this.onaddstream;
-    if (this._stream) pc.addStream(this._stream);
+    if (this.onaddstream) pc.ontrack = this.onaddstream;
+    if (this._stream) {
+      this._stream.getTracks().forEach(track =>  pc.addTrack(track, this._stream));
+    }
     return pc;
   }
 
@@ -85,7 +90,7 @@ class SFUClient {
     const certificate = await RTCPeerConnection.generateCertificate({ name: 'ECDSA', namedCurve: 'P-256' });
     config.certificates = [certificate];
     this._pc = this._createPeerConnection(config);
-    await this._pc.setRemoteDescription(new RTCSessionDescription(message));
+    await this._pc.setRemoteDescription(new RTCSessionDescription(message)).catch(console.log);
     const sdp = await this._pc.createAnswer({});
     await this._pc.setLocalDescription(sdp);
     this._ws.send(JSON.stringify({ type: 'answer', sdp: this._pc.localDescription.sdp }));
