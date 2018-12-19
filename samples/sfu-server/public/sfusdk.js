@@ -75,6 +75,24 @@ class SFUClient { // eslint-disable-line no-unused-vars
     const pc = new RTCPeerConnection(config);
     pc.onclose = console.log;
     pc.onerror = console.error;
+<<<<<<< .mine
+    pc.oniceconnectionstatechange = () => {
+      console.log('ICE: ' + pc.iceConnectionState);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======
     pc.oniceconnectionstatechange = () => {
       console.log('ICE: ' + pc.iceConnectionState);
       if (pc.iceConnectionState !== 'checking') return;
@@ -91,7 +109,21 @@ class SFUClient { // eslint-disable-line no-unused-vars
       const candidate = event.candidate.toJSON();
       candidate.type = 'candidate';
       self._ws.send(JSON.stringify(candidate));
+>>>>>>> .theirs
     };
+<<<<<<< .mine
+    const self = this;
+    if (self.onaddstream) {
+      pc.ontrack = (event) => {
+        if (!self._client_id) return;
+        if (this._is_multi) {
+          if (event.streams[0].id === self._client_id) return;
+        }
+        self.onaddstream(event);
+      };
+    }
+    if (this.onremovestream) pc.onremovestream = this.onremovestream;
+=======
     if (self.onaddstream) {
       pc.ontrack = (event) => {
         if (!self._client_id) return;
@@ -102,6 +134,8 @@ class SFUClient { // eslint-disable-line no-unused-vars
       };
     }
     if (this.onremovestream) pc.onremovestream = this.onremovestream;
+
+>>>>>>> .theirs
     if (this._stream) {
       this._stream.getTracks().forEach(track => pc.addTrack(track, this._stream));
     }
@@ -117,6 +151,7 @@ class SFUClient { // eslint-disable-line no-unused-vars
     const certificate = await RTCPeerConnection.generateCertificate({ name: 'ECDSA', namedCurve: 'P-256' });
     config.certificates = [certificate];
     this._pc = this._createPeerConnection(config);
+
     await this._pc.setRemoteDescription(new RTCSessionDescription(message)).catch(console.log);
     const sdp = await this._pc.createAnswer({});
     await this._pc.setLocalDescription(sdp);
