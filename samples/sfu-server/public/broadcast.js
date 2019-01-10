@@ -1,4 +1,5 @@
 /* global axios, Vue, SFUClient */
+/* eslint no-restricted-globals: ["error"] */
 /**
  * Copyright (c) 2017 Ricoh Company, Ltd. All Rights Reserved.
  * See LICENSE for more information
@@ -11,19 +12,18 @@ const http = axios.create({ baseURL: location.href.substr(0, pos) });
 let localStream = null;
 let sfu = null;
 
-function debounce (fn, delay) {
+function debounce(fn, delay) {
   let tid = null;
-  return function () {
+  return function (...args) {
     clearTimeout(tid);
-    const args = arguments;
     const self = this;
     tid = setTimeout(() => {
       fn.apply(self, args);
     }, delay);
-  }
+  };
 }
 
-const app = new Vue({
+const app = new Vue({ // eslint-disable-line no-unused-vars
   el: '#app',
   data: {
     message: ' ',
@@ -43,7 +43,7 @@ const app = new Vue({
         .then((stream) => {
           console.log('#### getUserMedia() loaded');
           localStream = stream;
-          elmVideo.srcObject =stream;
+          elmVideo.srcObject = stream;
           return http.request({ method: 'post', url: '/ticket', data: { direction: 'up' } });
         })
         .then((ret) => {
@@ -55,10 +55,11 @@ const app = new Vue({
               localStream.getTracks().forEach(track => track.stop());
               localStream = null;
             }
-            if (elmVideo.src) {
+            if (elmVideo.srcObject) {
               elmVideo.srcObject = null;
             }
             vm.state = 'ready';
+            vm.message = 'closed';
             console.log('#### closed');
           };
           sfu.setMedia({ codec_type: 'VP9', bit_rate: 2000 }, { codec_type: 'OPUS' }, localStream);

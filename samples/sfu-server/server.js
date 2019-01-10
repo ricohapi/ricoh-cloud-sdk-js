@@ -64,23 +64,23 @@ function deleteRoom(token, body) {
   return axios.request(params).then(ret => ret.data);
 }
 
-const router = new KoaRouter;
-router.get('/list', async(ctx, next) => {
+const router = new KoaRouter();
+router.get('/list', async (ctx, next) => {
   const token = await getToken().catch(() => ctx.throw(401, 'AuthFail'));
   ctx.body = await listRooms(token).catch(() => ctx.throw(500, 'ListFail'));
 });
 
-router.post('/ticket', async(ctx, next) => {
+router.post('/ticket', async (ctx, next) => {
   const token = await getToken().catch(() => ctx.throw(401, 'AuthFail'));
   const id = await getRoom(token, ctx.request.body).catch(() => ctx.throw(500, 'RoomFail'));
   ctx.body = await getTicket(token, id, ctx.request.body).catch(() => ctx.throw(500, 'TicketFail'));
 });
 
-router.delete('/room', async(ctx, next) => {
+router.delete('/room', async (ctx, next) => {
   const token = await getToken().catch(() => ctx.throw(401, 'AuthFail'));
-  ctx.body = await deleteRoom(token, ctx.request.body).catch(e => {
-    if(e.response.status == 404) ctx.body = 'done';
-    else ctx.throw(500, 'DelFail')
+  ctx.body = await deleteRoom(token, ctx.request.body).catch((e) => {
+    if (e.response.status === 404) ctx.body = 'done';
+    else ctx.throw(500, 'DelFail');
   });
 });
 
@@ -89,7 +89,7 @@ if (!process.env.RDC_CLIENT_ID || !process.env.RDC_CLIENT_SECRET) {
   process.exit(0);
 }
 
-const app = new Koa;
+const app = new Koa();
 app.use(bodyParser());
 app.use(koaConvert(koaCors()));
 app.use(router.routes());

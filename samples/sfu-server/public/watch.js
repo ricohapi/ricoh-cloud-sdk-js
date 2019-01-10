@@ -1,6 +1,7 @@
 /* global ThetaView, axios, Vue, SFUClient */
+/* eslint no-restricted-globals: ["error"] */
 /**
- * Copyright (c) 2017 Ricoh Company, Ltd. All Rights Reserved.
+ * Copyright (c) 2018 Ricoh Company, Ltd. All Rights Reserved.
  * See LICENSE for more information
  */
 
@@ -11,30 +12,29 @@ const elmVideo = document.getElementById('remoteVideo');
 const pos = location.href.lastIndexOf('/');
 const http = axios.create({ baseURL: location.href.substr(0, pos) });
 
-function debounce (fn, delay) {
+function debounce(fn, delay) {
   let tid = null;
-  return function () {
+  return function (...args) {
     clearTimeout(tid);
-    const args = arguments;
     const self = this;
     tid = setTimeout(() => {
       fn.apply(self, args);
     }, delay);
-  }
+  };
 }
 
 Vue.component('room-item', {
   props: ['room'],
-  template: '<div>' +
-    '<button v-on:click="$emit(\'con\')">' +
-    '<div v-bind:class="{onair:room.upCount > 0}">' +
-    ' {{ room.id }} watch:{{ room.downCount }} </div>' +
-    '</button>' +
-    '<button v-on:click="$emit(\'del\')">Del</button>' +
-    '</div>',
+  template: '<div>'
+    + '<button v-on:click="$emit(\'con\')">'
+    + '<div v-bind:class="{onair:room.upCount > 0}">'
+    + ' {{ room.id }} watch:{{ room.downCount }} </div>'
+    + '</button>'
+    + '<button v-on:click="$emit(\'del\')">Del</button>'
+    + '</div>',
 });
 
-const app = new Vue({
+const app = new Vue({ // eslint-disable-line no-unused-vars
   el: '#app',
   data: {
     message: '',
@@ -43,22 +43,22 @@ const app = new Vue({
     thetamode: false,
   },
   methods: {
-    thetaon: function() {
+    thetaon: function () {
       thetaview.setContainer(elmWrapper);
       thetaview.start(elmVideo);
       this.thetamode = true;
     },
-    thetaoff: function() {
+    thetaoff: function () {
       thetaview.stop(elmVideo);
       this.thetamode = false;
     },
-    disconnect: function() {
+    disconnect: function () {
       if (sfu) sfu.disconnect();
     },
-    remove: debounce(function(id) {
+    remove: debounce(function (id) {
       const vm = this;
       http.request({ method: 'delete', url: '/room', data: { room: id } })
-        .then((ret) => {
+        .then(() => {
           vm.listRooms();
         })
         .catch((e) => {
@@ -66,7 +66,7 @@ const app = new Vue({
           vm.state = 'ready';
         });
     }, 500),
-    watch: function(id) {
+    watch: function (id) {
       const vm = this;
       console.log('#### start watch() -> ticket ', id);
 
@@ -82,8 +82,8 @@ const app = new Vue({
             vm.thetamode = false;
             elmVideo.srcObject = null;
           };
-          sfu.onaddstream = (event) => {
-            elmVideo.srcObject = event.streams[0];
+          sfu.onaddstream = ({ streams }) => {
+            [elmVideo.srcObject] = streams;
           };
           sfu.setMedia({ codec_type: 'VP9' }, { codec_type: 'OPUS' });
           sfu.connect(ret.data.url, ret.data.access_token);
@@ -94,7 +94,7 @@ const app = new Vue({
           vm.state = 'ready';
         });
     },
-    listRooms: function() {
+    listRooms: function () {
       const vm = this;
       vm.message = 'Connecting...';
       vm.rooms = [];
@@ -104,7 +104,7 @@ const app = new Vue({
           ret.data.rooms.forEach(r => vm.rooms.push({
             id: r.id,
             upCount: r.up_count,
-            downCount: r.down_count
+            downCount: r.down_count,
           }));
           vm.state = 'listed';
           vm.message = `Room count: ${vm.rooms.length}`;

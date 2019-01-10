@@ -4,41 +4,42 @@
  * See LICENSE for more information
  */
 
-class ThetaView {
+class ThetaView { // eslint-disable-line no-unused-vars
   _cyln2world(a, e) {
-    return (new THREE.Vector3(
-      Math.cos(e) * Math.cos(a),
-      Math.cos(e) * Math.sin(a),
-      Math.sin(e)));
+    const x = Math.cos(e) * Math.cos(a);
+    const y = Math.cos(e) * Math.sin(a);
+    const z = Math.sin(e);
+    return new THREE.Vector3(x, y, z);
   }
 
   _world2fish(x, y, z) {
     let nz = z;
     if (z < -1.0) nz = -1.0;
     else if (z > 1.0) nz = 1.0;
-    return (new THREE.Vector2(
-      Math.atan2(y, x),
-      Math.acos(nz) / Math.PI)); // 0.0 to 1.0
+    const xx = Math.atan2(y, x);
+    const yy = Math.acos(nz) / Math.PI; // 0.0 to 1.0
+    return new THREE.Vector2(xx, yy);
   }
 
   _calcTexUv(i, j, lens) {
-    const world = this._cyln2world(
-      ((i + 90) / 180.0 - 1.0) * Math.PI, // rotate 90 deg for polygon
-      (0.5 - j / 180.0) * Math.PI);
-    const ar = this._world2fish(
-      Math.sin(-0.5 * Math.PI) * world.z + Math.cos(-0.5 * Math.PI) * world.x,
-      world.y,
-      Math.cos(-0.5 * Math.PI) * world.z - Math.sin(-0.5 * Math.PI) * world.x);
+    const a = ((i + 90) / 180.0 - 1.0) * Math.PI; // rotate 90 deg for polygon
+    const e = (0.5 - j / 180.0) * Math.PI;
+    const world = this._cyln2world(a, e);
+
+    const xx = Math.sin(-0.5 * Math.PI) * world.z + Math.cos(-0.5 * Math.PI) * world.x;
+    const yy = world.y;
+    const zz = Math.cos(-0.5 * Math.PI) * world.z - Math.sin(-0.5 * Math.PI) * world.x;
+    const ar = this._world2fish(xx, yy, zz);
 
     const fishRad = 0.883;
     const fishRad2 = fishRad * 0.88888888888888;
     const fishCenter = 1.0 - 0.44444444444444;
-    const x = (lens === 0) ?
-      fishRad * ar.y * Math.cos(ar.x) * 0.5 + 0.25 :
-      fishRad * (1.0 - ar.y) * Math.cos(-1.0 * ar.x + Math.PI) * 0.5 + 0.75;
-    const y = (lens === 0) ?
-      fishRad2 * ar.y * Math.sin(ar.x) + fishCenter :
-      fishRad2 * (1.0 - ar.y) * Math.sin(-1.0 * ar.x + Math.PI) + fishCenter;
+    const x = (lens === 0)
+      ? fishRad * ar.y * Math.cos(ar.x) * 0.5 + 0.25
+      : fishRad * (1.0 - ar.y) * Math.cos(-1.0 * ar.x + Math.PI) * 0.5 + 0.75;
+    const y = (lens === 0)
+      ? fishRad2 * ar.y * Math.sin(ar.x) + fishCenter
+      : fishRad2 * (1.0 - ar.y) * Math.sin(-1.0 * ar.x + Math.PI) + fishCenter;
     return (new THREE.Vector2(x, y));
   }
 
@@ -48,10 +49,10 @@ class ThetaView {
     const uvs = [];
     for (let j = 0; j <= 180; j += 5) {
       for (let i = 0; i <= 360; i += 5) {
-        geometry.vertices.push(new THREE.Vector3(
-          Math.sin(Math.PI * j / 180.0) * Math.sin(Math.PI * i / 180.0) * 500.0,
-          Math.cos(Math.PI * j / 180.0) * 500.0,
-          Math.sin(Math.PI * j / 180.0) * Math.cos(Math.PI * i / 180.0) * 500.0));
+        const x = Math.sin(Math.PI * j / 180.0) * Math.sin(Math.PI * i / 180.0) * 500.0;
+        const y = Math.cos(Math.PI * j / 180.0) * 500.0;
+        const z = Math.sin(Math.PI * j / 180.0) * Math.cos(Math.PI * i / 180.0) * 500.0;
+        geometry.vertices.push(new THREE.Vector3(x, y, z));
       }
       /* devide texture */
       for (let k = 0; k <= 180; k += 5) {
@@ -62,16 +63,18 @@ class ThetaView {
       }
     }
 
-    for (let m = 0; m < 36; m = m+1) {
-      for (let n = 0; n < 72; n = n+1) {
+    for (let m = 0; m < 36; m += 1) {
+      for (let n = 0; n < 72; n += 1) {
         const v = m * 73 + n;
         geometry.faces.push(
           new THREE.Face3(v + 0, v + 1, v + 73, null, null, 0),
-          new THREE.Face3(v + 1, v + 74, v + 73, null, null, 0));
+          new THREE.Face3(v + 1, v + 74, v + 73, null, null, 0),
+        );
         const t = (n < 36) ? m * 74 + n : m * 74 + n + 1;
 
         geometry.faceVertexUvs[0].push(
-          [uvs[t + 0], uvs[t + 1], uvs[t + 74]], [uvs[t + 1], uvs[t + 75], uvs[t + 74]]);
+          [uvs[t + 0], uvs[t + 1], uvs[t + 74]], [uvs[t + 1], uvs[t + 75], uvs[t + 74]],
+        );
       }
     }
     geometry.scale(-1, 1, 1); // rotate left-right

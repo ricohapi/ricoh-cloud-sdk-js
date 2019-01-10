@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <title>Bidir</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <style>
+  .onair {
+    color: blue;
+  }
+  </style>
+</head>
+
+<body>
+  <p>For this sample you need to prepare the room in advance. </p>
+  <div id="app">
+    <p>{{ message }}</p>
+    <template v-if="state == 'ready'">
+      <button v-on:click="listRooms">List</button>
+    </template>
+    <template v-else-if="state == 'listed'">
+      <button v-on:click="listRooms">Reload</button>
+      <ol>
+        <room-item v-for="item in rooms" :key="item.id" v-bind:room="item" v-on:mbroad="mbroad(item.id)"></room-item>
+      </ol>
+    </template>
+    <template v-else>
+      <button v-on:click="disconnect">disconnect</button>
+    </template>
+  </div>
+  <!-- out of vue -->
+  <div id="wrapper">
+    <video id="localVideo" autoplay="autoplay" width=200 controls></video>
+  </div>
+  <div id="wrapper1">
+    <video id="remoteVideo1" autoplay="autoplay" controls></video>
+  </div>
+  <div id="wrapper2">
+    <video id="remoteVideo2" autoplay="autoplay" controls></video>
+  </div>
+  <div id="wrapper3">
+    <video id="remoteVideo3" autoplay="autoplay" controls></video>
+  </div>
+  <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+
+  <script src="./sfusdk.js"></script>
+  <script src="./bidir.js"></script>
+</body>
+
+</html>
