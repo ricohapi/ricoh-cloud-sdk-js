@@ -90,11 +90,7 @@ class SFUClient { // eslint-disable-line no-unused-vars
     const pc = new RTCPeerConnection(config);
     pc.onclose = console.log;
     pc.onerror = console.error;
-<<<<<<< .mine
 
-=======
-<<<<<<< .mine
->>>>>>> .theirs
     pc.oniceconnectionstatechange = () => {
       console.log(`ICE: ${pc.iceConnectionState}`);
       if (pc.iceConnectionState !== 'checking') return;
@@ -113,33 +109,7 @@ class SFUClient { // eslint-disable-line no-unused-vars
           }, 1000);
         }
       }, 5000);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
-    pc.oniceconnectionstatechange = () => {
-      console.log('ICE: ' + pc.iceConnectionState);
-      if (pc.iceConnectionState !== 'checking') return;
-      const timerId = setInterval(() => {
-        if (!self._pc || self._pc.iceConnectionState !== 'connected') {
-          if(self._ws) self._ws.close();
-          console.log("ICE Timeout");
-          clearInterval(timerId);
-        }
-      }, 3000);
     };
-<<<<<<< .mine
 
     pc.onicecandidate = (event) => {
       if (!event.candidate) return;
@@ -164,54 +134,6 @@ class SFUClient { // eslint-disable-line no-unused-vars
     };
 
     if (this._stream) this._stream.getTracks().forEach(track => pc.addTrack(track, this._stream));
-
-
-
-
-
-
-
-
-
-
-
-=======
-    pc.onicecandidate = (event) => {
-      if (!event.candidate) return;
-      const candidate = event.candidate.toJSON();
-      candidate.type = 'candidate';
-      self._ws.send(JSON.stringify(candidate));
->>>>>>> .theirs
-    };
-<<<<<<< .mine
-    const self = this;
-    if (self.onaddstream) {
-      pc.ontrack = (event) => {
-        if (!self._client_id) return;
-        if (this._is_multi) {
-          if (event.streams[0].id === self._client_id) return;
-        }
-        self.onaddstream(event);
-      };
-    }
-    if (this.onremovestream) pc.onremovestream = this.onremovestream;
-=======
-    if (self.onaddstream) {
-      pc.ontrack = (event) => {
-        if (!self._client_id) return;
-        if (self._is_multi) {
-          if (event.streams[0].id === self._client_id) return;
-        }
-        self.onaddstream(event);
-      };
-    }
-    if (this.onremovestream) pc.onremovestream = this.onremovestream;
-
->>>>>>> .theirs
-    if (this._stream) {
-      this._stream.getTracks().forEach(track => pc.addTrack(track, this._stream));
-    }
->>>>>>> .theirs
     return pc;
   }
 
