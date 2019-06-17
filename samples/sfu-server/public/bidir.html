@@ -6,9 +6,30 @@
   <title>Bidir</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
   <style>
-  .onair {
-    color: blue;
-  }
+  .onair { color: blue; }
+  video { border:1px solid black; }
+  .wrapper { margin: 10px; }
+  .cc {
+    font-size: 0;
+    display: table;
+   }
+   .cc figcaption {
+    display: table-caption;
+    caption-side: bottom;
+    background: rgba(0,0,0,0.6);
+    padding: .5em;
+    color: #fff;
+    position: relative;
+    text-align: left;
+    font-size: 1.2rem;
+   }
+   .cc figcaption a {
+     text-decoration: none; font-size: 1rem;
+     color: #fff;
+     border-bottom: none;
+   }
+   .cc a:hover { color: red; }
+   .cc a:visited { color: #770; }
   </style>
 </head>
 
@@ -31,16 +52,28 @@
   </div>
   <!-- out of vue -->
   <div id="wrapper">
-    <video id="localVideo" autoplay="autoplay" width=200 controls></video>
+    <figure id="ctrl0" class="cc">
+      <video id="localVideo" autoplay="autoplay" width=200px></video>
+      <figcaption><a href="#">&#x25BA</a></figcaption>
+    </figure>
   </div>
-  <div id="wrapper1">
-    <video id="remoteVideo1" autoplay="autoplay" controls></video>
+  <div id="wrapper1" class="wrapper">
+    <figure id="ctrl1" class="cc">
+      <video id="remoteVideo1" autoplay="autoplay"></video>
+      <figcaption><a href="#">&#x25BA</a></figcaption>
+    </figure>
   </div>
-  <div id="wrapper2">
-    <video id="remoteVideo2" autoplay="autoplay" controls></video>
+  <div id="wrapper2" class="wrapper">
+    <figure id="ctrl2" class="cc">
+      <video id="remoteVideo2" autoplay="autoplay"></video>
+    <figcaption><a href="#">&#x25BA</a></figcaption>
+    </figure>
   </div>
-  <div id="wrapper3">
-    <video id="remoteVideo3" autoplay="autoplay" controls></video>
+  <div id="wrapper3" class="wrapper">
+    <figure id="ctrl3" class="cc">
+      <video id="remoteVideo3" autoplay="autoplay"></video>
+      <figcaption><a href="#">&#x25BA</a></figcaption>
+    </figure>
   </div>
   <script src="https://unpkg.com/vue/dist/vue.min.js"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -49,6 +82,30 @@
 
   <script src="./sfusdk.js"></script>
   <script src="./bidir.js"></script>
+<script type="text/javascript">
+function customctrl(id) {
+  const moviecontainer = document.getElementById(id),
+  movie = moviecontainer.querySelector("video"),
+  controls = moviecontainer.querySelector("figcaption"),
+  playpause = controls.querySelector("a");
+
+  movie.removeAttribute("controls");
+  controls.style.display = "block";
+  playpause.addEventListener("click", function(e) {
+  e.preventDefault()
+  if (movie.paused) {
+    movie.play();
+    playpause.innerHTML = "&#x25fC";
+  } else {
+    movie.pause();
+    playpause.innerHTML = "&#x25BA";
+  }})
+}
+customctrl("ctrl0");
+customctrl("ctrl1");
+customctrl("ctrl2");
+customctrl("ctrl3");
+</script>
 </body>
 
 </html>

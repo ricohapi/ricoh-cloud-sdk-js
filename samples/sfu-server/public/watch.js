@@ -55,64 +55,68 @@ const app = new Vue({ // eslint-disable-line no-unused-vars
     disconnect: function () {
       if (sfu) sfu.disconnect();
     },
-    remove: debounce(function (id) {
+    remove: debounce(async function (id) {
       const vm = this;
-      http.request({ method: 'delete', url: '/room', data: { room: id } })
-        .then(() => {
-          vm.listRooms();
-        })
-        .catch((e) => {
-          vm.message = JSON.stringify(e);
-          vm.state = 'ready';
-        });
+      try {
+        await http.request({ method: 'delete', url: '/room', data: { room: id } });
+        vm.listRooms();
+      } catch (e) {
+        vm.message = e;
+        vm.state = 'ready';
+      }
     }, 500),
-    watch: function (id) {
+
+    _closed: function () {
+      const vm = this;
+      vm.state = 'listed';
+      console.log('#### closed');
+      if (!elmVideo.srcObject) return;
+      thetaview.stop(elmVideo);
+      vm.thetamode = false;
+      elmVideo.srcObject = null;
+    },
+
+    watch: async function (id) {
       const vm = this;
       console.log('#### start watch() -> ticket ', id);
+      try {
+        const ret = await http.request({ method: 'post', url: '/ticket', data: { direction: 'down', room: id } });
+        const ticket = ret.data;
+        console.log('#### ticket created -> open ', ticket.url);
 
-      http.request({ method: 'post', url: '/ticket', data: { direction: 'down', room: id } })
-        .then((ret) => {
-          console.log('#### ticket created -> open ', ret.data.url);
-          sfu = new SFUClient('down', ret.data.id);
-          sfu.onclose = () => {
-            vm.state = 'listed';
-            console.log('#### closed');
-            if (!elmVideo.srcObject) return;
-            thetaview.stop(elmVideo);
-            vm.thetamode = false;
-            elmVideo.srcObject = null;
-          };
-          sfu.onaddstream = ({ streams }) => {
-            [elmVideo.srcObject] = streams;
-          };
-          sfu.setMedia({ codec_type: 'VP9' }, { codec_type: 'OPUS' });
-          sfu.connect(ret.data.url, ret.data.access_token);
-          vm.state = 'connected';
-        })
-        .catch((e) => {
-          vm.message = JSON.stringify(e);
-          vm.state = 'ready';
-        });
+        sfu = new SFUClient('down', ticket.id);
+        sfu.onclose = vm._closed;
+        sfu.onaddstream = ({ streams }) => {
+          [elmVideo.srcObject] = streams;
+        };
+        sfu.setMedia({ codec_type: 'H264' }, { codec_type: 'OPUS' });
+        sfu.connect(ticket.url, ticket.access_token);
+        vm.state = 'connected';
+      } catch (e) {
+        vm.message = e;
+        vm.state = 'ready';
+      }
     },
-    listRooms: function () {
+
+    listRooms: async function () {
       const vm = this;
       vm.message = 'Connecting...';
       vm.rooms = [];
 
-      http.request({ method: 'get', url: '/list' })
-        .then((ret) => {
-          ret.data.rooms.forEach(r => vm.rooms.push({
-            id: r.id,
-            upCount: r.up_count,
-            downCount: r.down_count,
-          }));
-          vm.state = 'listed';
-          vm.message = `Room count: ${vm.rooms.length}`;
-        })
-        .catch((e) => {
-          vm.message = JSON.stringify(e);
-          vm.state = 'ready';
-        });
+      try {
+        const ret = await http.request({ method: 'get', url: '/list' });
+        vm.rooms.length = 0;
+        ret.data.rooms.forEach(r => vm.rooms.push({
+          id: r.id,
+          upCount: r.up_count,
+          downCount: r.down_count,
+        }));
+        vm.state = 'listed';
+        vm.message = `Room count: ${vm.rooms.length}`;
+      } catch (e) {
+        vm.message = e;
+        vm.state = 'ready';
+      }
     },
   },
 });
